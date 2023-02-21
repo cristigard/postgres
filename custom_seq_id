@@ -1,0 +1,38 @@
+
+
+
+#Table
+CREATE TABLE table_name(id SERIAL UNIQUE PRIMARY KEY NOT NULL, name text);
+
+#Trigger function
+CREATE FUNCTION custom_seq_id() RETURNS trigger
+AS $$
+
+  #get id from current insert
+  current_inserted_id = TD["new"]["id"] 
+  
+  try:
+    with plpy.subtransaction():
+    
+      #get (last-1) id from table(last-1 because current_inserted_id is last now) 
+      last_inserted_id = plpy.execute("select id from table_name order by datetime desc limit 2") 
+    
+      if current_inserted_id - last_inserted_id[1]["id"] != 1:
+        #update current_inserted_id to (last_inserted_id + 1)
+        plpy.execute(f"update table_name set id = {last_inserted_id[1]['id'] + 1} where id = {current_inserted_id}")
+        
+  #write to a file if errors ocurrs        
+  except plpy.SPIError as err:
+    with open('/path/to/error_file','w') as f:
+      f.write(f'{err}')
+  
+$$ LANGUAGE plpython3u;
+
+
+ #trigger
+ CREATE TRIGGER custom_seq_id_trigger
+ AFTER INSERT
+ ON table_name
+ FOR EACH ROW
+ EXECUTE PROCEDURE custom_seq_id(); 
+
