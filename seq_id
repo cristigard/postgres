@@ -1,0 +1,47 @@
+https://www.cybertec-postgresql.com/en/postgresql-sequences-vs-invoice-numbers/
+
+#table
+CREATE TABLE t_invoice (
+inv_id int PRIMARY KEY,
+whatever text );
+
+#one way (but not to good because of Concurrency)
+What’s wrong with this approach? The problem can be summed up with one word: Concurrency. 
+What if two people run the same operation? Well, both queries will return the same value. max(id) + 1 
+will be identical and therefore a primary key violation will be the logical consequence.
+
+INSERT INTO t_invoice
+VALUES (1, 'whatever invoice data');
+
+INSERT INTO t_invoice
+SELECT max(inv_id) + 1, 'more invoice data'
+FROM t_invoice
+
+-------------------------------------
+
+#other way
+While this is technically correct, locking the entire table really hurts because it will impact other transactions. 
+Just imagine some kind of reporting job which tries to sum up yesterday’s turnover – it has to read the table but it 
+doesn’t work, because invoice creation keeps locking up the table in the most brutal way known to PostgreSQL. 
+Clearly, this is not an option.
+
+BEGIN;
+LOCK TABLE t_invoice IN ACCESS EXCLUSIVE MODE;
+INSERT INTO t_invoice SELECT max(inv_id) + 1, 'high value client'
+FROM t_invoice;
+COMMIT;
+
+------------------------------------
+
+#best way 
+The beauty of a serializable transaction is that one does not have to care about locking and concurrency at all. 
+The PostgreSQL core will sort things out for you. Keep in mind that SERIALIZABLE does have some overhead, 
+but it solves a couple of common problems. Usually it is better to have slower single thread performance but beat 
+the brute force table lock by introducing more concurrency to the system. 
+Also remember: There is no slower way to execute than to “wait”.
+
+BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+INSERT INTO t_invoice
+SELECT max(inv_id) + 1, 'fancy support client' FROM t_invoice;
+COMMIT;
+
