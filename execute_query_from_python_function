@@ -1,0 +1,30 @@
+#EXECUTE EXTERNAL PYTHON SCRIPT FROM TRIGGER FUNCTION
+
+#function
+CREATE FUNCTION execute_query_from_python_function() RETURNS trigger
+AS $$
+
+ #https://www.postgresql.org/docs/current/plpython-database.html 
+ #use "with plpy.subtransaction()" for executing all plpy.execute rows under "with" statment in the same transaction
+ #if use plpy.execute without "with plpy.subtransaction()" every plpy.execute will be a transaction and if you have 
+ more plpy.execute rows and something went wrong in one the rest will be executed
+ #for small query use plpy.execute
+ #for large query data use plpy.cursor
+ 
+try:
+    with plpy.subtransaction():
+    	#get data value from quey- > data1[0]["column_name"] 
+        data1 = plpy.execute("UPDATE accounts SET username = 'trasfer' WHERE id = 13")
+        data2 = plpy.execute("UPDATE test SET name = 'trasfer test'  WHERE id = 5")
+except plpy.SPIError as e:
+    with open('/path/to/file','w') as f:
+     f.write(f'{e}')
+
+$$ 
+LANGUAGE plpython3u;
+
+#trigger
+CREATE TRIGGER execute_query_from_python_function_trigger
+AFTER INSERT ON mytable
+FOR EACH ROW
+EXECUTE PROCEDURE execute_query_from_python_function();
