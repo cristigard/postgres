@@ -1,0 +1,5 @@
+
+
+#set current row data
+TD["new"]["inv_id"] = 1007
+return f'MODIFY'
