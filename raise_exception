@@ -1,0 +1,16 @@
+#DOCUMENTATION
+https://www.postgresql.org/docs/current/plpgsql-errors-and-messages.html#PLPGSQL-STATEMENTS-RAISE
+
+
+RAISE EXCEPTION 'Nonexistent ID --> %', user_id
+      USING HINT = 'Please check your user ID';
+
+BEGIN
+  NEW.inv_id := (SELECT max(inv_id) + 1 FROM f_invoice);
+  IF NEW.inv_id IS NOT NULL THEN
+    RETURN NEW;
+  ELSE
+    RAISE EXCEPTION 'First insert must be done manually'
+          USING HINT = 'Deactivate trigger before insert first row!';
+  END IF; 
+END;
