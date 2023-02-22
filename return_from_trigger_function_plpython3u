@@ -1,5 +1,21 @@
+#DOCUMENTATION
+https://www.postgresql.org/docs/current/plpython-trigger.html
+
+#function
+CREATE FUNCTION func() RETURNS trigger
+AS $$ 
+
+  #set current row new var before execute INSERT
+  TD["new"]["inv_id"] = 1007
+  return f'MODIFY'
+
+$$ LANGUAGE plpython3u;
+
+#trigger 
+CREATE TRIGGER add_new_product
+BEFORE INSERT
+ON table_name
+FOR EACH ROW
+EXECUTE PROCEDURE func();
 
 
-#set current row data
-TD["new"]["inv_id"] = 1007
-return f'MODIFY'
