@@ -36,6 +36,7 @@ COMMIT;
 ------------------------------------
 
 #best way 
+https://www.postgresql.org/docs/current/transaction-iso.html
 The beauty of a serializable transaction is that one does not have to care about locking and concurrency at all. 
 The PostgreSQL core will sort things out for you. Keep in mind that SERIALIZABLE does have some overhead, 
 but it solves a couple of common problems. Usually it is better to have slower single thread performance but beat 
@@ -46,4 +47,25 @@ BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;
 INSERT INTO t_invoice
 SELECT max(inv_id) + 1, 'fancy support client' FROM t_invoice;
 COMMIT;
+
+#best way custom
+
+#trigger function
+CREATE FUNCTION function_name() RETURNS trigger AS 
+$$
+  BEGIN
+    NEW.inv_id := (SELECT max(inv_id) from f_invoice) + 1;
+    RETURN NEW;
+  END;
+$$ 
+LANGUAGE plpgsql;
+
+#trigger
+CREATE TRIGGER trigger_name 
+BEFORE INSERT ON t_invoice
+FOR EACH ROW EXECUTE FUNCTION function_name();
+
+#how to insert(will take inv_id from trigger function)
+insert into t_invoice(whatever) values ('details')
+
 
