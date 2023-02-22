@@ -1,5 +1,6 @@
-
-#https://vladmihalcea.com/postgresql-triggers-isolation-levels/
+#DOCUMENTATION
+https://www.postgresql.org/docs/current/transaction-iso.html
+https://vladmihalcea.com/postgresql-triggers-isolation-levels/
 
 #how to see default isolation level for database
 SHOW default_transaction_isolation;
