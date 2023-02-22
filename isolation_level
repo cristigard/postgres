@@ -1,5 +1,6 @@
 #DOCUMENTATION
 https://www.postgresql.org/docs/current/transaction-iso.html
+https://www.postgresql.org/docs/current/sql-set-transaction.html
 https://vladmihalcea.com/postgresql-triggers-isolation-levels/
 
 #how to see default isolation level for database
