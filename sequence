@@ -1,4 +1,6 @@
-https://www.cybertec-postgresql.com/en/postgresql-sequences-vs-invoice-numbers/
+#why do not use default postgres sequence in invoice: https://www.postgresql.org/docs/current/functions-sequence.html
+#how to use sequence correctly: https://www.cybertec-postgresql.com/en/postgresql-sequences-vs-invoice-numbers/
+
 
 #table
 CREATE TABLE t_invoice (
