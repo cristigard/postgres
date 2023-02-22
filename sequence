@@ -43,18 +43,21 @@ but it solves a couple of common problems. Usually it is better to have slower s
 the brute force table lock by introducing more concurrency to the system. 
 Also remember: There is no slower way to execute than to “wait”.
 
+#take care, insert first row manually
 BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;
 INSERT INTO t_invoice
-SELECT max(inv_id) + 1, 'fancy support client' FROM t_invoice;
+SELECT max(inv_id) + 1, 'invoice detail' FROM t_invoice;
 COMMIT;
 
-#best way custom
+---------------------------------
 
-#trigger function
+#best way custom
+#trigger function(take care at first input, must deactivate trigger)
 CREATE FUNCTION function_name() RETURNS trigger AS 
 $$
   BEGIN
-    NEW.inv_id := (SELECT max(inv_id) from f_invoice) + 1;
+    SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+    NEW.inv_id := (SELECT max(inv_id) + 1 FROM t_invoice);
     RETURN NEW;
   END;
 $$ 
@@ -66,6 +69,6 @@ BEFORE INSERT ON t_invoice
 FOR EACH ROW EXECUTE FUNCTION function_name();
 
 #how to insert(will take inv_id from trigger function)
-insert into t_invoice(whatever) values ('details')
+insert into t_invoice(whatever) values ('invoice detail')
 
 
