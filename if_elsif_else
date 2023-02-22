@@ -1,0 +1,31 @@
+#DOCUMENTATION
+https://www.postgresql.org/docs/15/plpgsql-control-structures.html
+https://www.postgresqltutorial.com/postgresql-plpgsql/plpgsql-if-else-statements/
+
+#IF
+if condition then
+   statements;
+END if;
+
+-------------------------
+
+#IF ELSE
+if condition then
+  statements;
+else
+  alternative-statements;
+END if;
+
+--------------------------
+
+#IF ELSIF ELSE
+if condition_1 then
+  statement_1;
+elsif condition_2 then
+  statement_2
+...
+elsif condition_n then
+  statement_n;
+else
+  else-statement;
+end if;
