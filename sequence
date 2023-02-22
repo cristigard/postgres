@@ -57,8 +57,13 @@ CREATE FUNCTION function_name() RETURNS trigger AS
 $$
   BEGIN
     SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL SERIALIZABLE;
-    NEW.inv_id := (SELECT max(inv_id) + 1 FROM t_invoice);
-    RETURN NEW;
+    NEW.inv_id := (SELECT max(inv_id) + 1 FROM f_invoice);
+    IF NEW.inv_id IS NOT NULL THEN
+      RETURN NEW;
+    ELSE
+      RAISE EXCEPTION 'First inserted row must be done manually to set sequence starting number!'
+            USING HINT = 'Deactivate trigger before insert first row!';
+   END IF; 
   END;
 $$ 
 LANGUAGE plpgsql;
