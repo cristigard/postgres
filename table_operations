@@ -1,0 +1,95 @@
+#COPY TABLE
+Note that all the statement copy table structure and data but do not copy indexes and constraints of the existing table.
+
+#To copy a table completely, including both table structure and data, you use the following statement:
+CREATE TABLE new_table AS 
+TABLE existing_table;
+
+#To copy a table structure without data, you add the WITH NO DATA clause to the CREATE TABLE statement as follows:
+CREATE TABLE new_table AS 
+TABLE existing_table 
+WITH NO DATA;
+
+
+#The condition in the WHERE clause of the query defines which rows of the existing table will be copied to the new table.
+#To copy a table with partial data from an existing table, you use the following statement:
+CREATE TABLE new_table AS 
+SELECT * FROM existing_table WHERE condition;
+
+--------------------------------------------
+
+#ALTER TABLE
+
+#Drop table
+DROP TABLE IF EXISTS table_name;
+
+#Add new column to table
+ALTER TABLE table_name
+ADD COLUMN new_column boolean;
+
+#Drop column
+ALTER TABLE table_name 
+DROP COLUMN column_name;
+
+#Rename column
+ALTER TABLE table_name 
+RENAME COLUMN column_name 
+TO new_column_name;
+
+#Change a default value of the column
+ALTER TABLE table_name 
+ALTER COLUMN column_name 
+[SET DEFAULT value | DROP DEFAULT];
+
+#Change the NOT NULL constraint
+ALTER TABLE table_name 
+ALTER COLUMN column_name 
+[SET NOT NULL| DROP NOT NULL];
+
+#add a CHECK constraint
+ALTER TABLE table_name 
+ADD CHECK expression;
+
+#add a constraint to a table
+ALTER TABLE table_name 
+ADD CONSTRAINT constraint_name constraint_definition;
+
+#rename a table
+ALTER TABLE table_name 
+RENAME TO new_table_name;
+
+--------------------------------------------
+
+#TABLE STRUCTURE
+
+#Check table structure
+SELECT table_name, column_name, data_type 
+FROM information_schema.columns
+WHERE table_name = 'table_name';
+
+#psql=# \d table_name;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
