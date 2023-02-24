@@ -1,0 +1,3 @@
+#Select data by a specific date(date/part date)
+SELECT * FROM table_name
+WHERE CAST(date_column as text) like '%2022-04%'
