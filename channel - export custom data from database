@@ -1,0 +1,41 @@
+#1 SCRIPT FILE
+import psycopg2
+import json
+
+# Establish a connection to the PostgreSQL database
+conn = psycopg2.connect(host="192.168.88.179",port="5432",database="test",user="postgres",password="password")
+
+# Open a new database cursor
+cur = conn.cursor()
+
+# Listen for notifications on the channel
+cur.execute("LISTEN my_channel;")
+
+# Continuously listen for notifications
+while True:
+    #When you call conn.poll(), it checks if there are any pending notifications or events waiting to be processed.
+    #If there are no pending notifications or events, conn.poll() will return 0
+    conn.poll()
+    while conn.notifies:
+        notify = conn.notifies.pop(0)
+        if notify.channel == "my_channel":
+            payload = json.loads(notify.payload)
+    conn.commit()
+
+# Close the cursor and connection
+cur.close()
+conn.close()
+
+#2 TRIGGER
+CREATE TRIGGER trigger_name
+AFTER INSERT ON accounts
+FOR EACH ROW
+EXECUTE FUNCTION notify_script();
+
+#3 TRIGGER FUNCTION
+CREATE FUNCTION notify_script() RETURNS TRIGGER AS $$
+BEGIN
+    PERFORM pg_notify('my_channel', json_build_object('user', NEW.username, 'pass', NEW.password)::text);
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
