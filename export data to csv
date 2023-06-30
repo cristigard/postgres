@@ -1,0 +1,2 @@
+#export data from database to outside csv file 
+copy (select * from accounts) to '/mnt/hgfs/shared/test.csv' with (format csv, header false);
