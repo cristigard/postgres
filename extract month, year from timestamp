@@ -3,3 +3,17 @@ select facid, extract(month from starttime) as month, sum(slots) as "Total Slots
 	where extract(year from starttime) = 2012
 	group by facid, month
 order by facid, month;
+
+One thing worth considering with this answer: the use of the EXTRACT function in the WHERE clause has the potential to cause severe issues with performance on larger tables. 
+If the timestamp column has a regular index on it, Postgres will not understand that it can use the index to speed up the query and will instead have to scan through the whole table. 
+You've got a couple of options here:
+1.Consider creating an expression-based index on the timestamp column. With appropriately specified indexes Postgres can use indexes to speed up WHERE clauses containing function calls.
+2.Alter the query to be a little more verbose, but use more standard comparisons, Postgres is able to use an index using these standard comparisons without any additional assistance. 
+For example:
+ select facid, extract(month from starttime) as month, sum(slots) as "Total Slots"
+	from cd.bookings
+	where
+		starttime >= '2012-01-01'
+		and starttime < '2013-01-01'
+	group by facid, month
+order by facid, month;
