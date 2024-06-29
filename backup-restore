@@ -1,0 +1,12 @@
+#backup DB
+pg_dump -h localhost -p 5432 -U user -d database_name -f backup_file_name.sql
+
+#restore DB
+CREATE DATABASE database_name;
+CREATE USER myprojectuser WITH PASSWORD 'password';
+ALTER ROLE myprojectuser SET client_encoding TO 'utf8';
+ALTER ROLE myprojectuser SET default_transaction_isolation TO 'read committed';
+ALTER ROLE myprojectuser SET timezone TO 'UTC';
+GRANT ALL PRIVILEGES ON DATABASE database_name TO myprojectuser;
+
+psql -U user -h localhost -d database_name -f backup_file_name.sql
